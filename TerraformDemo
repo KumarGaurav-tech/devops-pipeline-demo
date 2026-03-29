@@ -1,0 +1,87 @@
+==========================================================
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y software-properties-common gnupg2 curl
+
+
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+sudo apt update
+sudo apt install terraform -y
+terraform --version
+aws configure
+
+
+
+Provide: from the IAM user
+Access Key ID
+
+
+Secret Access Key
+
+
+Region (e.g., us-east-1)
+
+
+Output: json or default
+
+
+
+
+mkdir terraform-ec2-demo
+cd terraform-ec2-demo
+
+main.tf
+
+provider "aws" {
+  region = var.aws_region
+}
+
+resource "aws_instance" "web" {
+  ami           = var.ami_id
+  instance_type = var.instance_type
+
+  tags = {
+    Name = "TerraformDemo"
+  }
+}
+
+
+variables.tf
+
+
+variable "aws_region" {
+  default = "us-east-1"
+}
+
+variable "ami_id" {
+  default = "ami-0c94855ba95c71c99"  # Ubuntu 20.04 LTS AMI in us-east-1
+}
+variable "instance_type" {
+  default = "t2.micro"
+}
+
+outputs.tf
+
+output "instance_id" {
+  value = aws_instance.web.id
+}
+
+output "public_ip" {
+  value = aws_instance.web.public_ip
+}
+
+
+
+
+
+terraform init
+terraform plan
+terraform apply
+
+terraform destroy
+
+terraform output
+
